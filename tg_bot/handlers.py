@@ -39,9 +39,8 @@ async def process_contact(message: Message, bot: Bot):
 
     async with async_session() as session:
 
-        print(message.contact.phone_number)
-
-        stmt = select(User).where(User.phone == message.contact.phone_number)
+        clear_phone_number = message.contact.phone_number.replace("+", "")
+        stmt = select(User).where(User.phone == clear_phone_number)
         result = await session.execute(stmt)
         db_user: User | None = result.scalar_one_or_none()
 
