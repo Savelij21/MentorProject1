@@ -9,4 +9,8 @@ class CustomUser(AbstractUser):
         unique=True,
         max_length=50,
     )
-    tg_id = models.IntegerField(unique=True)
+    tg_id = models.IntegerField(
+        unique=True,
+        null=True,
+        blank=True
+    )
