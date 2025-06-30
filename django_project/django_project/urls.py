@@ -29,5 +29,6 @@ urlpatterns = [
     path("api/v0/ping", ping_view, name="ping"),
     # apps
     path("api/", include("subscriptions.urls")),
+    path("api/", include("products.urls")),
 
 ]
