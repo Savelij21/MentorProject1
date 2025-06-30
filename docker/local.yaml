@@ -1,0 +1,92 @@
+# NETWORKS -------------------------------------------------------------------
+networks:
+  main-services-local:
+    name: main-services-local-net
+    driver: bridge
+    external: false
+
+
+# VOLUMES --------------------------------------------------------------------
+volumes:
+  postgres_data: {}
+
+
+# SERVICES -------------------------------------------------------------------
+
+name: project-1-local
+
+services:
+
+  # POSTGRES ------------------------------------------------------------------
+  postgres:
+    image: postgres:17.4-bookworm
+    container_name: postgres
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      start_period: 10s
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    networks:
+      - main-services-local
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    env_file:
+      - ../.envs/.local
+    ports:
+      - "5432:5432"
+    restart: no
+
+  # DJANGO
+  django:
+    build:
+      context: ../
+      dockerfile: ./docker/default/django_project/Dockerfile
+    image: django
+    container_name: django
+    healthcheck:
+      test: [ "CMD-SHELL", "curl -f http://localhost:8000/api/v0/ping || exit 1" ]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 5s
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - main-services-local
+    volumes:
+      - "../django_project:/app:z"
+    env_file:
+      - ../.envs/.local
+    environment:
+      - DJANGO_SETTINGS_MODULE=django_project.settings
+    ports:
+      - "8000:8000"
+    restart: no
+    command: python manage.py runserver 0.0.0.0:8000
+
+#  # TG BOT -------------------------------------------------------------------
+#  tg_bot:
+#    build:
+#      context: ../
+#      dockerfile: default/tg_bot/Dockerfile
+#    container_name: tg_bot
+#    image: tg_bot
+#    depends_on:
+#      django:
+#        condition: service_healthy
+#    healthcheck:
+#      test: [ "CMD-SHELL", "curl -f http://localhost:8080/healthcheck || exit 1" ]
+#      interval: 30s
+#      timeout: 5s
+#      retries: 5
+#      start_period: 10s
+#    networks:
+#      - main-services-local
+#    env_file:
+#      - ../.envs/.local
+#    volumes:
+#      - ../tg_bot:/app:z
+#    restart: no
+#    command: "watchmedo auto-restart --patterns=*.py --recursive -- python main.py"

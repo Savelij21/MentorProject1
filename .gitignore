@@ -345,6 +345,7 @@ dump.rdb
 .env
 .envs/*
 !/.envs/example
+!/.envs/.example
 *.zip
 
 ### Others
