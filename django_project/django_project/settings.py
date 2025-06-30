@@ -31,6 +31,9 @@ ALLOWED_HOSTS = []
 # CUSTOM
 AUTH_USER_MODEL = "users.CustomUser"
 
+# TG BOT
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+
 
 # Application definition
 

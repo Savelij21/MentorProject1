@@ -67,26 +67,20 @@ services:
     command: python manage.py runserver 0.0.0.0:8000
 
 #  # TG BOT -------------------------------------------------------------------
-#  tg_bot:
-#    build:
-#      context: ../
-#      dockerfile: default/tg_bot/Dockerfile
-#    container_name: tg_bot
-#    image: tg_bot
-#    depends_on:
-#      django:
-#        condition: service_healthy
-#    healthcheck:
-#      test: [ "CMD-SHELL", "curl -f http://localhost:8080/healthcheck || exit 1" ]
-#      interval: 30s
-#      timeout: 5s
-#      retries: 5
-#      start_period: 10s
-#    networks:
-#      - main-services-local
-#    env_file:
-#      - ../.envs/.local
-#    volumes:
-#      - ../tg_bot:/app:z
-#    restart: no
-#    command: "watchmedo auto-restart --patterns=*.py --recursive -- python main.py"
+  tg_bot:
+    build:
+      context: ../
+      dockerfile: ./docker/default/tg_bot/Dockerfile
+    container_name: tg_bot
+    image: tg_bot
+    depends_on:
+      django:
+        condition: service_healthy
+    networks:
+      - main-services-local
+    env_file:
+      - ../.envs/.local
+    volumes:
+      - ../tg_bot:/app:z
+    restart: no
+    command: "watchmedo auto-restart --patterns=*.py --recursive -- python main.py"
