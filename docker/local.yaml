@@ -37,7 +37,7 @@ services:
       - "5432:5432"
     restart: no
 
-  # DJANGO
+  # DJANGO ------------------------------------------------------------------
   django:
     build:
       context: ../
@@ -66,7 +66,7 @@ services:
     restart: no
     command: python manage.py runserver 0.0.0.0:8000
 
-#  # TG BOT -------------------------------------------------------------------
+  # TG BOT -------------------------------------------------------------------
   tg_bot:
     build:
       context: ../

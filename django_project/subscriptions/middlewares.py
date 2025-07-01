@@ -7,7 +7,7 @@ from subscriptions.models import UserSubscription
 User = get_user_model()
 
 
-class AuthSelectiveMiddleware:
+class CheckUserSubscriptionMiddleware:
     def __init__(self, get_response):
         self.get_response = get_response
         self.resources_for_auth = [
@@ -25,9 +25,7 @@ class AuthSelectiveMiddleware:
             if not user.is_authenticated:
                 raise Exception("User is not authenticated")
 
-            try:
-                UserSubscription.objects.get(user=user)
-            except UserSubscription.DoesNotExist:
+            if not UserSubscription.objects.filter(user=user).exists():
                 raise Exception("User has no subscription")
 
         return self.get_response(request)
