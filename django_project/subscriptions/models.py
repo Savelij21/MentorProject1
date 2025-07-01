@@ -14,8 +14,8 @@ class Tariff(models.Model):
 
 class UserSubscription(models.Model):
 
-    tariff = models.ForeignKey(Tariff, on_delete=models.CASCADE)
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    tariff = models.ForeignKey(Tariff, on_delete=models.CASCADE, related_name="subscriptions")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="subscriptions")
 
     def __str__(self):
         return f"{self.id}#sub - {self.user_id}#user - {self.tariff_id}#tariff"

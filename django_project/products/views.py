@@ -3,6 +3,7 @@ from typing import override
 from django.contrib.auth import get_user_model
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
+from rest_framework.permissions import IsAuthenticated
 
 from products.models import Order
 from products.serializers import OrderSerializer, OrderUpdateSerializer
@@ -13,8 +14,12 @@ User = get_user_model()
 
 class OrdersViewSet(ModelViewSet):
 
-    queryset = Order.objects.all()
     serializer_class = OrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        # Юзер видит только свои заказы
+        return Order.objects.filter(owner=self.request.user)
 
     def get_serializer_class(self):
         if self.action in ["update", "partial_update"]:
@@ -34,5 +39,4 @@ class OrdersViewSet(ModelViewSet):
                     f"{response.data['description']}"
                 )
             )
-
         return response
